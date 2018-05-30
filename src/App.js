@@ -17,7 +17,7 @@ class App extends Component {
     this.setState({
       messages: [
         ...this.state.messages,
-        `Date: ${new Date().toLocaleTimeString()} Latitude: ${
+        `Heure: ${new Date().toLocaleTimeString()} Latitude: ${
           position.coords.latitude
         } Longitude ${position.coords.longitude} Accuracy ${
           position.coords.accuracy
@@ -31,7 +31,7 @@ class App extends Component {
     this.setState({
       messages: [
         ...this.state.messages,
-        `Erreur code: ${err.code}  message: ${err.message} `
+        `Heure: ${new Date().toLocaleTimeString()} Erreur code: ${err.code}  message: ${err.message} `
       ]
     });
   }
@@ -39,7 +39,7 @@ class App extends Component {
   handleClick() {
     var options = {
       enableHighAccuracy: false,
-      timeout: 6000,
+      timeout: 30000,
       maximumAge: 0
     };
     navigator.geolocation.watchPosition(this.success, this.error, options);
