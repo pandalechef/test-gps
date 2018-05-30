@@ -31,9 +31,7 @@ export default function register() {
 
     window.addEventListener('load', () => {
       const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
-      console.log("dans load");
       if (isLocalhost) {
-        console.log("dans isLocalhost");
         // This is running on localhost. Lets check if a service worker still exists or not.
         checkValidServiceWorker(swUrl);
 
@@ -46,7 +44,6 @@ export default function register() {
           );
         });
       } else {
-        console.log("else register service worker");
         // Is not local host. Just register service worker
         registerValidSW(swUrl);
       }
@@ -58,10 +55,14 @@ function registerValidSW(swUrl) {
   navigator.serviceWorker
     .register(swUrl)
     .then(registration => {
+      console.log("après register");
       registration.onupdatefound = () => {
+        console.log("après onupdatefound");
         const installingWorker = registration.installing;
         installingWorker.onstatechange = () => {
+          console.log("avant if");
           if (installingWorker.state === 'installed') {
+            console.log("navigator.serviceWorker.controller");
             if (navigator.serviceWorker.controller) {
               // At this point, the old content will have been purged and
               // the fresh content will have been added to the cache.
