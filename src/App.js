@@ -26,6 +26,7 @@ class App extends Component {
     };
     this.getPosition(options)
       .then(location => {
+        console.log("latitude: ", location.coords.latitude, " longitude", location.coords.longitude);
         this.setState({
           latitude: location.coords.latitude,
           longitude: location.coords.longitude
