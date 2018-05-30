@@ -19,7 +19,12 @@ class App extends Component {
   }
 
   handleClick() {
-    this.getPosition()
+    var options = {
+      enableHighAccuracy: false,
+      timeout: 30000,
+      maximumAge: 0
+    };
+    this.getPosition(options)
       .then(location => {
         this.setState({
           latitude: location.coords.latitude,
