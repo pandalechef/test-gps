@@ -8,13 +8,14 @@ class App extends Component {
     this.state = {
       latitude: undefined,
       longitude: undefined,
-      error: undefined
+      error: undefined,
+      messages: []
     };
     this.handleClick = this.handleClick.bind(this);
   }
   getPosition(options) {
     return new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject, options);
+      navigator.geolocation.watchPosition(resolve, reject, options);
     });
   }
 
@@ -29,7 +30,15 @@ class App extends Component {
         console.log("latitude: ", location.coords.latitude, " longitude", location.coords.longitude);
         this.setState({
           latitude: location.coords.latitude,
-          longitude: location.coords.longitude
+          longitude: location.coords.longitude,
+          messages: [
+            ...this.state.messages,
+            `Date: ${new Date().toLocaleTimeString()} Latitude: ${
+              position.coords.latitude
+            } Longitude ${position.coords.longitude} Accuracy ${
+              position.coords.accuracy
+            }`
+          ]
         });
       })
       .catch(e => this.setState({ error: e.message }));
@@ -51,6 +60,7 @@ class App extends Component {
           ? `Latitude:  ${latitude} Longitude:  ${longitude}`
           : ''}
         {error ? `Erreur ${error}` : ''}
+        {this.state.messages.map((m, i) => <div key={i}>{m}</div>)}
       </div>
     );
   }
