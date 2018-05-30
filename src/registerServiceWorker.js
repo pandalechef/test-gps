@@ -31,8 +31,9 @@ export default function register() {
 
     window.addEventListener('load', () => {
       const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
-
+      console.log("dans load");
       if (isLocalhost) {
+        console.log("dans isLocalhost");
         // This is running on localhost. Lets check if a service worker still exists or not.
         checkValidServiceWorker(swUrl);
 
@@ -45,6 +46,7 @@ export default function register() {
           );
         });
       } else {
+        console.log("else register service worker");
         // Is not local host. Just register service worker
         registerValidSW(swUrl);
       }
