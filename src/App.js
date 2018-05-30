@@ -34,9 +34,9 @@ class App extends Component {
           messages: [
             ...this.state.messages,
             `Date: ${new Date().toLocaleTimeString()} Latitude: ${
-              position.coords.latitude
-            } Longitude ${position.coords.longitude} Accuracy ${
-              position.coords.accuracy
+              location.coords.latitude
+            } Longitude ${location.coords.longitude} Accuracy ${
+              location.coords.accuracy
             }`
           ]
         });
