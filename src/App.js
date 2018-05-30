@@ -1,23 +1,57 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import logo from "./logo.svg";
+import "./App.css";
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
     this.state = {
+      messagesGetCurrentPosition: [],
       messages: []
     };
     this.success = this.success.bind(this);
     this.error = this.error.bind(this);
+    this.handleClickGetCurrentPosition = this.handleClickGetCurrentPosition.bind(
+      this
+    );
+  }
+
+  getPosition(options) {
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject, options);
+    });
+  }
+
+  handleClickGetCurrentPosition() {
+    this.getPosition()
+      .then(position => {
+        this.setState({
+          messagesGetCurrentPosition: [
+            ...this.state.messagesGetCurrentPosition,
+            `Date: ${new Date().toLocaleTimeString()} Latitude: ${
+              position.coords.latitude
+            } Longitude ${position.coords.longitude} Accuracy ${
+              position.coords.accuracy
+            }`
+          ]
+        });
+      })
+      .catch(err => {
+        this.setState({
+          messagesGetCurrentPosition: [
+            ...this.state.messagesGetCurrentPosition,
+            `Erreur code: ${err.code}  message: ${err.message} `
+          ]
+        });
+      });
   }
 
   success(position) {
     this.setState({
       messages: [
         ...this.state.messages,
-        `Heure: ${new Date().toLocaleTimeString()} Latitude: ${
+        `Date: ${new Date().toLocaleTimeString()} Latitude: ${
           position.coords.latitude
         } Longitude ${position.coords.longitude} Accuracy ${
           position.coords.accuracy
@@ -31,7 +65,7 @@ class App extends Component {
     this.setState({
       messages: [
         ...this.state.messages,
-        `Heure: ${new Date().toLocaleTimeString()} Erreur code: ${err.code}  message: ${err.message} `
+        `Erreur code: ${err.code}  message: ${err.message} `
       ]
     });
   }
@@ -39,7 +73,7 @@ class App extends Component {
   handleClick() {
     var options = {
       enableHighAccuracy: false,
-      timeout: 30000,
+      timeout: 6000,
       maximumAge: 0
     };
     navigator.geolocation.watchPosition(this.success, this.error, options);
@@ -56,7 +90,15 @@ class App extends Component {
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
         <div>
-          <button onClick={this.handleClick}>GPS</button>
+          <button onClick={this.handleClickGetCurrentPosition}>
+            GPS getCurrentPosition
+          </button>
+          {this.state.messagesGetCurrentPosition.map((m, i) => (
+            <div key={i}>{m}</div>
+          ))}
+          <br />
+          <br />
+          <button onClick={this.handleClick}>GPS watchPosition</button>
           <br />
           <br />
           {this.state.messages.map((m, i) => <div key={i}>{m}</div>)}
