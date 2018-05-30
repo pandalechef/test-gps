@@ -5,46 +5,47 @@ import './App.css';
 class App extends Component {
   constructor(props) {
     super(props);
+    this.handleClick = this.handleClick.bind(this);
     this.state = {
-      latitude: undefined,
-      longitude: undefined,
-      error: undefined,
       messages: []
     };
-    this.handleClick = this.handleClick.bind(this);
+    this.success = this.success.bind(this);
+    this.error = this.error.bind(this);
   }
-  getPosition(options) {
-    return new Promise((resolve, reject) => {
-      navigator.geolocation.watchPosition(resolve, reject, options);
+
+  success(position) {
+    this.setState({
+      messages: [
+        ...this.state.messages,
+        `Date: ${new Date().toLocaleTimeString()} Latitude: ${
+          position.coords.latitude
+        } Longitude ${position.coords.longitude} Accuracy ${
+          position.coords.accuracy
+        }`
+      ]
+    });
+    console.log("postion: ", position);
+  }
+
+  error(err) {
+    this.setState({
+      messages: [
+        ...this.state.messages,
+        `Erreur code: ${err.code}  message: ${err.message} `
+      ]
     });
   }
 
   handleClick() {
     var options = {
       enableHighAccuracy: false,
-      timeout: 30000,
+      timeout: 6000,
       maximumAge: 0
     };
-    this.getPosition(options)
-      .then(location => {
-        console.log("latitude: ", location.coords.latitude, " longitude", location.coords.longitude);
-        this.setState({
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          messages: [
-            ...this.state.messages,
-            `Date: ${new Date().toLocaleTimeString()} Latitude: ${
-              location.coords.latitude
-            } Longitude ${location.coords.longitude} Accuracy ${
-              location.coords.accuracy
-            }`
-          ]
-        });
-      })
-      .catch(e => this.setState({ error: e.message }));
+    navigator.geolocation.watchPosition(this.success, this.error, options);
   }
+
   render() {
-    const { latitude, longitude, error } = this.state;
     return (
       <div className="App">
         <header className="App-header">
@@ -54,13 +55,12 @@ class App extends Component {
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
-        <button onClick={this.handleClick}>GPS</button>
-        <br />
-        {latitude && longitude
-          ? `Latitude:  ${latitude} Longitude:  ${longitude}`
-          : ''}
-        {error ? `Erreur ${error}` : ''}
-        {this.state.messages.map((m, i) => <div key={i}>{m}</div>)}
+        <div>
+          <button onClick={this.handleClick}>GPS</button>
+          <br />
+          <br />
+          {this.state.messages.map((m, i) => <div key={i}>{m}</div>)}
+        </div>
       </div>
     );
   }
