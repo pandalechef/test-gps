@@ -1,21 +1,30 @@
 import React, { Component } from "react";
 import logo from "./logo.svg";
+import spinner from "./oval.svg";
 import "./App.css";
+import Positions from "./Positions";
 
 class App extends Component {
   constructor(props) {
     super(props);
-    this.handleClick = this.handleClick.bind(this);
     this.state = {
+      isLoading: false,
       messagesGetCurrentPosition: [],
-      messages: []
+      messagesWatchPosition: []
     };
     this.success = this.success.bind(this);
     this.error = this.error.bind(this);
+    this.handleClickWatchPosition = this.handleClickWatchPosition.bind(this);
     this.handleClickGetCurrentPosition = this.handleClickGetCurrentPosition.bind(
       this
     );
   }
+
+  options = {
+    enableHighAccuracy: false,
+    timeout: 20000,
+    maximumAge: 0
+  };
 
   getPosition(options) {
     return new Promise((resolve, reject) => {
@@ -24,24 +33,32 @@ class App extends Component {
   }
 
   handleClickGetCurrentPosition() {
-    this.getPosition()
+    this.setState({ isLoading: true });
+    this.getPosition(this.options)
       .then(position => {
         this.setState({
+          isLoading: false,
           messagesGetCurrentPosition: [
             ...this.state.messagesGetCurrentPosition,
-            `Date: ${new Date().toLocaleTimeString()} Latitude: ${
-              position.coords.latitude
-            } Longitude ${position.coords.longitude} Accuracy ${
-              position.coords.accuracy
-            }`
+            {
+              heure: new Date().toLocaleTimeString(),
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              accuracy: position.coords.accuracy
+            }
           ]
         });
       })
       .catch(err => {
         this.setState({
+          isLoading: false,
           messagesGetCurrentPosition: [
             ...this.state.messagesGetCurrentPosition,
-            `Erreur code: ${err.code}  message: ${err.message} `
+            {
+              heure: new Date().toLocaleTimeString(),
+              code: err.code,
+              message: err.message
+            }
           ]
         });
       });
@@ -49,59 +66,65 @@ class App extends Component {
 
   success(position) {
     this.setState({
-      messages: [
-        ...this.state.messages,
-        `Date: ${new Date().toLocaleTimeString()} Latitude: ${
-          position.coords.latitude
-        } Longitude ${position.coords.longitude} Accuracy ${
-          position.coords.accuracy
-        }`
+      messagesWatchPosition: [
+        ...this.state.messagesWatchPosition,
+        {
+          heure: new Date().toLocaleTimeString(),
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          accuracy: position.coords.accuracy
+        }
       ]
     });
-    console.log("postion: ", position);
   }
 
   error(err) {
     this.setState({
-      messages: [
-        ...this.state.messages,
-        `Erreur code: ${err.code}  message: ${err.message} `
+      messagesWatchPosition: [
+        ...this.state.messagesWatchPosition,
+        {
+          heure: new Date().toLocaleTimeString(),
+          code: err.code,
+          message: err.message
+        }
       ]
     });
   }
 
-  handleClick() {
-    var options = {
-      enableHighAccuracy: false,
-      timeout: 6000,
-      maximumAge: 0
-    };
-    navigator.geolocation.watchPosition(this.success, this.error, options);
+  handleClickWatchPosition() {
+    navigator.geolocation.watchPosition(this.success, this.error, this.options);
   }
 
   render() {
+    const {
+      messagesGetCurrentPosition,
+      messagesWatchPosition,
+      isLoading
+    } = this.state;
     return (
       <div className="App">
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
+          <h1 className="App-title">Test du GPS</h1>
         </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
         <div>
-          <button onClick={this.handleClickGetCurrentPosition}>
-            GPS getCurrentPosition
+          <br />
+          <div>
+            <button onClick={this.handleClickGetCurrentPosition}>
+              GPS avec getCurrentPosition
+            </button>
+            {isLoading && <img src={spinner} alt="logo" />}
+          </div>
+
+          <br />
+          <Positions positions={messagesGetCurrentPosition} />
+          <br />
+          <button onClick={this.handleClickWatchPosition}>
+            GPS avec watchPosition
           </button>
-          {this.state.messagesGetCurrentPosition.map((m, i) => (
-            <div key={i}>{m}</div>
-          ))}
           <br />
           <br />
-          <button onClick={this.handleClick}>GPS watchPosition</button>
-          <br />
-          <br />
-          {this.state.messages.map((m, i) => <div key={i}>{m}</div>)}
+          <Positions positions={messagesWatchPosition} />
         </div>
       </div>
     );
