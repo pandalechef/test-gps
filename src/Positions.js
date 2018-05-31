@@ -2,7 +2,6 @@ import React, { Component } from "react";
 
 export default class Positions extends Component {
   render() {
-    console.log(this.props.positions);
     const positions = this.props.positions;
     if (positions.length === 0) {
       return "";
@@ -11,6 +10,7 @@ export default class Positions extends Component {
       <table align="center">
         <thead>
           <tr>
+            <th>N° appel</th>
             <th>Heure</th>
             <th>Latitude</th>
             <th>Longitude</th>
@@ -26,11 +26,13 @@ export default class Positions extends Component {
 const PositionLigne = (p, index) =>
   p.code && p.message ? (
     <tr key={index}>
+      <td>{index + 1}</td>
       <td>{p.heure}</td>
       <td colSpan={3}>{`Code ${p.code} Message ${p.message}`}</td>
     </tr>
   ) : (
     <tr key={index}>
+      <td>{index + 1}</td>
       <td>{p.heure}</td>
       <td>{p.latitude}</td>
       <td>{p.longitude}</td>
