@@ -22,7 +22,7 @@ class App extends Component {
 
   options = {
     enableHighAccuracy: false,
-    timeout: 20000,
+    timeout: 240000,
     maximumAge: 0
   };
 
